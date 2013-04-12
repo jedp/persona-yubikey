@@ -12,5 +12,14 @@
   },
   "author": "Jed Parsons <jed@jedparsons.com>",
   "license": "BSD",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+
+  "dependencies": {
+    "awsbox": "0.4.2",
+    "hapi": "0.16.0"
+  },
+
+  "devDependencies": {
+    "vows": "0.7.0"
+  }
 }
