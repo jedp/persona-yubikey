@@ -1,0 +1,16 @@
+{
+  "name": "yubikey-idp",
+  "version": "0.0.0",
+  "description": "A Persona IdP with two-factor auth, password and yubikey",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jedp/persona-yubikey"
+  },
+  "author": "Jed Parsons <jed@jedparsons.com>",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
