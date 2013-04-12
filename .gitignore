@@ -1,2 +1,5 @@
-*~
+*.pem
 /node_modules
+
+*~
+*.sw[op]

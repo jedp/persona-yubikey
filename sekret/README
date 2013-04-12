@@ -1,0 +1,7 @@
+Generate your public and private keys, and put them here, like so:
+
+openssl genrsa -out private-key.pem 2048
+openssl rsa -in private-key.pem -pubout > public-key.pem
+
+These will become part of your config when you deploy.
+
