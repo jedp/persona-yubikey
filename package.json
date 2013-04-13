@@ -12,7 +12,7 @@
     "url": "https://github.com/jedp/persona-yubikey"
   },
   "author": "Jed Parsons <jed@jedparsons.com>",
-  "license": "BSD",
+  "license": "MIT",
   "readmeFilename": "README.md",
 
   "dependencies": {

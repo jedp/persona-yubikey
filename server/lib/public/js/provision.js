@@ -3,7 +3,7 @@
 
   /*
    * The identity is the first 12 bytes of the yubikey OTP token.
-   * 
+   *
    * For example, if the token is 'vvvvvvcurikvhjcvnlnbecbkubjvuittbifhndhn',
    * then the user's email is 'vvvvvvcurikvhj@gno.mn' and the identity is
    * 'vvvvvvcurikvhj'.

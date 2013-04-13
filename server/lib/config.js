@@ -1,7 +1,7 @@
 const
 fs = require('fs'),
 path = require('path'),
-GNOMN_CONFIG_FILE = path.join(__dirname, '../../gnomn.conf.json');
+GNOMN_CONFIG_FILE = path.join(__dirname, '../../../gnomn.conf.json');
 
 function readSekret(name) {
   var filepath = path.join(__dirname, '../../sekret', name);
@@ -9,7 +9,7 @@ function readSekret(name) {
 }
 
 var config;
-if (fs.exists(GNOMN_CONFIG_FILE)) {
+if (fs.existsSync(GNOMN_CONFIG_FILE)) {
   config = JSON.parse(fs.readFileSync(GNOMN_CONFIG_FILE));
 } else {
   yubikey_creds = readSekret('yubikey');
@@ -22,7 +22,7 @@ if (fs.exists(GNOMN_CONFIG_FILE)) {
   }
 }
 
-config['port'] = process.env.PORT || 3000;
+config['port'] = parseInt(process.env.PORT || 3000, 10);
 config['ip_address'] = process.env.IP_ADDRESS || '127.0.0.1';
 
 module.exports = config;

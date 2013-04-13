@@ -1,4 +1,4 @@
-const 
+const
 Hapi = require('hapi'),
 config = require('./config'),
 yubikey = new(require('yubikey', config.yubikey_client_id, config.yubikey_secret_key));
@@ -16,7 +16,7 @@ var options = {
   }
 };
 
-var server = Hapi.createServer(config.port, options);
+var server = new Hapi.Server(config.ip_addr, config.port, options);
 
 // Serve the home page
 var rootHandler = function(req) {
@@ -88,7 +88,6 @@ server.route({path: '/css/{path*}', method: 'GET', handler: getStatic('css')});
 module.exports = server;
 
 if (!module.parent) {
-  console.log("server starting");
   server.start();
 }
 
