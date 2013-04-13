@@ -5,16 +5,20 @@ GNOMN_CONFIG_FILE = path.join(__dirname, '../../gnomn.conf.json');
 
 function readSekret(name) {
   var filepath = path.join(__dirname, '../../sekret', name);
-  return fs.readFileSync(filepath).toString();
+  return JSON.parse(fs.readFileSync(filepath).toString());
 }
 
 var config;
 if (fs.exists(GNOMN_CONFIG_FILE)) {
   config = JSON.parse(fs.readFileSync(GNOMN_CONFIG_FILE));
 } else {
+  yubikey_creds = readSekret('yubikey');
   config = {
-    gnomn_public_key: readSekret('public-key.pem'),
-    gnomn_private_key: readSekret('private-key.pem'),
+    yubikey_client_id: yubikey_creds.id,
+    yubikey_secret_key: yubikey_creds.key,
+
+    gnomn_public_key: readSekret('key.publickey'),
+    gnomn_private_key: readSekret('key.secretkey'),
   }
 }
 

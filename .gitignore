@@ -1,5 +1,6 @@
-*.pem
+*.{pem,crt,key}
 /node_modules
+/sekret
 
 *~
 *.sw[op]

@@ -39,8 +39,8 @@ function copyConfig(callback) {
 
     var config = {
       // Our keys for signing certificates
-      gnomn_public_key: fs.readFileSync(path.join(__dirname, '../../sekret/public-key.pem')),
-      gnomn_private_key: fs.readFileSync(path.join(__dirname, '../../sekret/private-key.pem')),
+      gnomn_public_key: JSON.parse(fs.readFileSync(path.join(__dirname, '../../sekret/key.publickey'))),
+      gnomn_private_key: JSON.parse(fs.readFileSync(path.join(__dirname, '../../sekret/key.secretkey'))),
 
       // Yubico client api keys
       yubico_client_id: getenv('YUBICO_CLIENT_ID'),
