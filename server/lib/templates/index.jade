@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 YubiKey Identity Provider for Mozilla Persona
+
+  p This is an experimental identity provider that lets people log into 
+    | Mozilla Persona using YubiKey.  The user's identity is the ID component
+    | extracted from the YubiKey.  Verification is done with the Yubico 
+    | servers.
+
+  p To give it a try, visit a site that supports Persona (such as
+    a(href='https://123done.org') 123done.org
+    | ) and sign in as yubikey_id@gno.mn.
+
+  p Your yubikey ID is the first 12 characters that the yubikey outputs
+    | whenever you generate a one-time password.
+

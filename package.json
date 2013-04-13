@@ -1,10 +1,11 @@
 {
-  "name": "yubikey-idp",
+  "name": "persona-yubikey",
   "version": "0.0.0",
   "description": "A Persona IdP with two-factor auth, password and yubikey",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "vows tests/*_vows.js --spec",
+    "start": "node server/lib/start.js"
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,11 @@
 
   "dependencies": {
     "awsbox": "0.4.2",
-    "hapi": "0.16.0"
+    "handlebars": "1.0.10",
+    "hapi": "0.16.0",
+    "jade": "0.28.2",
+    "request": "2.16.6",
+    "yubikey": "0.0.1"
   },
 
   "devDependencies": {

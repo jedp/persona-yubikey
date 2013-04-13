@@ -9,15 +9,12 @@ function readSekret(name) {
 }
 
 var config;
-if (path.exists(GNOMN_CONFIG_FILE)) {
+if (fs.exists(GNOMN_CONFIG_FILE)) {
   config = JSON.parse(fs.readFileSync(GNOMN_CONFIG_FILE));
 } else {
   config = {
     gnomn_public_key: readSekret('public-key.pem'),
     gnomn_private_key: readSekret('private-key.pem'),
-
-    yubico_client_id: process.env['YUBICO_CLIENT_ID'],
-    yubico_secret_key: process.env['YUBICO_SECRET_KEY']
   }
 }
 
