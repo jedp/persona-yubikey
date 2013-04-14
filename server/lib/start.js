@@ -1,7 +1,10 @@
 const
 Hapi = require('hapi'),
 config = require('./config'),
-yubikey = new(require('yubikey', config.yubikey_client_id, config.yubikey_secret_key));
+Yubikey = require('yubikey'),
+yubikey = new Yubikey(config.yubikey_client_id, config.yubikey_secret_key);
+
+console.log(config);
 
 var options = {
   views: {
@@ -34,7 +37,8 @@ var getWellknown = function(req) {
 
 // Is the identity of the Yubikey already authenticated?
 var getIdentityIsAuthenticated = function(req) {
-  var identity = req.body.identity.trim();
+  if (!req.query.identity) return req.reply({success: false});
+  var identity = req.query.identity.trim();
   console.log("received identity:", identity);
   if (req.state.authenticated && identity === req.state.identity) {
     return req.reply({success: true});
@@ -80,7 +84,7 @@ server.route({path: '/', method: 'GET', handler: rootHandler});
 server.route({path: '/.well-known/browserid', method: 'GET', handler: getWellknown});
 server.route({path: '/sign_in', method: 'GET', handler: getAuth});
 server.route({path: '/provision', method: 'GET', handler: getProv});
-server.route({path: '/otp', method: 'GET', handler: getIdentityIsAuthenticated});
+server.route({path: '/identity', method: 'GET', handler: getIdentityIsAuthenticated});
 server.route({path: '/otp', method: 'POST', handler: postOtpForVerification});
 server.route({path: '/js/{path*}', method: 'GET', handler: getStatic('js')});
 server.route({path: '/css/{path*}', method: 'GET', handler: getStatic('css')});

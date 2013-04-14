@@ -44,7 +44,7 @@
       type: "GET",
       url: "/identity",
       data: {
-        otp: otp
+        identity: identity
       },
       success: function(resp, code) {
         callback && callback(resp.success);
