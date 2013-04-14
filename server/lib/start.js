@@ -1,12 +1,11 @@
 const
 Hapi = require('hapi'),
 config = require('./config'),
+utils = require('./utils'),
 Yubikey = require('yubikey'),
 yubikey = new Yubikey(config.yubikey_client_id, config.yubikey_secret_key);
 
-console.log(config);
-
-var options = {
+var serverOptions = {
   views: {
     path: __dirname + '/templates',
     engine: {
@@ -19,7 +18,7 @@ var options = {
   }
 };
 
-var server = new Hapi.Server(config.ip_addr, config.port, options);
+var server = new Hapi.Server(config.ip_addr, config.port, serverOptions);
 
 // Serve the home page
 var rootHandler = function(req) {
@@ -60,6 +59,26 @@ var postOtpForVerification = function(req) {
   });
 };
 
+// Certify a public key
+var postCertKey = function(req) {
+  var params = {
+    duration: utils.ensureInt(req.payload.duration || config.cert_duration_ms),
+    pubkey: req.payload.pubkey,
+    email: req.payload.email,
+    hostname: config.hostname
+  };
+  if (!(params.duration && params.pubkey && params.email)) {
+    return req.reply({success: false});
+  }
+  utils.certify(params, function(err, cert) {
+    return req.reply({
+      success: (!err && cert),
+      certificate: (!err && cert) ? cert : null,
+      reason: err ? err.toString : null
+    });
+  });
+};
+
 // Serve the authentication page
 var getAuth = function(req) {
   req.reply.view('authenticate').send();
@@ -83,6 +102,7 @@ var getStatic = function(path) {
 server.route({path: '/', method: 'GET', handler: rootHandler});
 server.route({path: '/.well-known/browserid', method: 'GET', handler: getWellknown});
 server.route({path: '/sign_in', method: 'GET', handler: getAuth});
+server.route({path: '/cert_key', method: 'POSt', handler: postCertKey});
 server.route({path: '/provision', method: 'GET', handler: getProv});
 server.route({path: '/identity', method: 'GET', handler: getIdentityIsAuthenticated});
 server.route({path: '/otp', method: 'POST', handler: postOtpForVerification});

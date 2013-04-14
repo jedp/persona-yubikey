@@ -17,9 +17,11 @@
 
   "dependencies": {
     "awsbox": "0.4.2",
+    "compute-cluster": "0.0.7",
     "handlebars": "1.0.10",
     "hapi": "0.16.0",
     "jade": "0.28.2",
+    "jwcrypto": "0.4.2",
     "request": "2.16.6",
     "yubikey": "0.0.2"
   },
