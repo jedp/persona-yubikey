@@ -1,12 +1,27 @@
-extends layout
+(function() {
+  "use strict";
 
-block content
-  form(method='post', action='/otp', name='form_authenticate')#form_authenticate.hidden
-    label(for='otp') OTP
-    input(type='text', name='otp', placeholder='vvvvvvcurikvhjcvnlnbecbkubjvuittbifhndhn')#otp
-    button Submit
+  navigator.id.beginAuthentication(function(email) {
+    var identity = email.split('@')[0];
+  });
 
-  p#success.hidden Success! You are now signed in.
+  $('#form_authenticate').on('submit', function(evt) {
+    evt.preventDefault();
+    var otp = $('#otp').val().trim();
+    $.ajax({
+      type: 'POST',
+      url: '/otp',
+      data: {
+        otp: otp
+      },
+      success: function(data) {
+        if (data.success) {
+          navigator.id.completeAuthentication();
+        } else {
+          console.error(data);
+        }
+      }
+    });
+  });
+})();
 
-  script(src='https://login.persona.org/authentication_api.js')
-  script(src='js/sign_in.js')

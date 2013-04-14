@@ -2,10 +2,15 @@ const
 Hapi = require('hapi'),
 config = require('./config'),
 utils = require('./utils'),
+certify = require('./certify'),
+foo = require('yar'),
 Yubikey = require('yubikey'),
-yubikey = new Yubikey(config.yubikey_client_id, config.yubikey_secret_key);
+yubikey = new Yubikey(config.yubikeyClientId, config.yubikeySecretKey);
+
+// Create server
 
 var serverOptions = {
+  debug: {request: ['error', 'uncaught'] },
   views: {
     path: __dirname + '/templates',
     engine: {
@@ -18,80 +23,101 @@ var serverOptions = {
   }
 };
 
-var server = new Hapi.Server(config.ip_addr, config.port, serverOptions);
+var server = new Hapi.Server(config.ip_address, config.port, serverOptions);
+
+// Add session support
+
+var sessionOptions = {
+  cookieOptions: {
+    password: config.sessionKey
+  }
+};
+
+var yar = __dirname + '/../../node_modules/yar';
+server.plugin.allow({ext: true}).require(yar, sessionOptions, function (err) { 
+  if (err) {
+    console.error(err);
+  }
+});
 
 // Serve the home page
-var rootHandler = function(req) {
-  req.reply.view('index', {message: "I like pie"}).send();
+var getRoot = function() {
+  this.reply.view('index', {message: 'I like pie'}).send();
 };
 
 // Serve browserid support manifest
-var getWellknown = function(req) {
-  req.reply({
-    'public-key': config.gnomn_public_key,
+var getWellknown = function() {
+  this.reply({
+    'public-key': config.publicKey_json,
     'authentication': '/sign_in',
     'provisioning': '/provision'
   });
 };
 
 // Is the identity of the Yubikey already authenticated?
-var getIdentityIsAuthenticated = function(req) {
-  if (!req.query.identity) return req.reply({success: false});
-  var identity = req.query.identity.trim();
-  console.log("received identity:", identity);
-  if (req.state.authenticated && identity === req.state.identity) {
-    return req.reply({success: true});
+var getIdentityIsAuthenticated = function() {
+  if (!this.query.identity) return this.reply({success: false, reason: 'Missing parameters'});
+  var identity = this.query.identity.trim();
+  var state = this.session.get('state');
+  if (state && state.authenticated && identity === state.identity) {
+    return this.reply({success: true});
   }
-  return req.reply({success: false});
+  return this.reply({success: false, reason: 'Not authenticated'});
 };
 
 // Submit an OTP for verification
-var postOtpForVerification = function(req) {
-  var otp = req.payload.otp.trim();
-  console.log("received otp:", otp, otp.length, "chars");
-  if (otp.length !== 44) return req.reply({success: false});
+var postOtpForVerification = function() {
+  var otp = this.payload.otp.trim();
+  if (otp.length !== 44) return this.reply({success: false, reason: 'Bad OTP'});
 
   yubikey.verify(otp, function(err, success) {
-    if (err) return req.reply({success: false, err: err});
-    req.state.authenticated = true;
-    req.state.identity = otp.slice(0, 14);
-    return req.reply({success: success});
-  });
+    if (err) {
+      console.log('yubikey.verify error:', err);
+      return this.reply({success: false, reason: err.toString()});
+    }
+    if (!success) return this.reply({success: false, reason: 'Success was ' + success});
+    this.session.set('state', {
+      authenticated: true,
+      identity: otp.slice(0, 12)
+    });
+    return this.reply({success: true});
+  }.bind(this));
 };
 
 // Certify a public key
-var postCertKey = function(req) {
+var postCertKey = function() {
   var params = {
-    duration: utils.ensureInt(req.payload.duration || config.cert_duration_ms),
-    pubkey: req.payload.pubkey,
-    email: req.payload.email,
+    duration: utils.ensureInt(this.payload.duration || config.certDuration_ms),
+    pubkey: this.payload.publicKey,
+    email: this.payload.email,
     hostname: config.hostname
   };
   if (!(params.duration && params.pubkey && params.email)) {
-    return req.reply({success: false});
+    return this.reply({success: false, reason: 'Missing parameters'});
   }
-  utils.certify(params, function(err, cert) {
-    return req.reply({
-      success: (!err && cert),
-      certificate: (!err && cert) ? cert : null,
-      reason: err ? err.toString : null
-    });
-  });
+  certify(params, function(err, certificate) {
+    if (err) {
+      console.log('postCertKey error:', err);
+      return this.reply({success: false, reason: err.toString()});
+    } else {
+      return this.reply({success: true, certificate: certificate});
+    }
+  }.bind(this));
 };
 
 // Serve the authentication page
-var getAuth = function(req) {
-  req.reply.view('authenticate').send();
+var getAuth = function() {
+  this.reply.view('authenticate').send();
 };
 
 // Serve the provisioning page
-var getProv = function(req) {
-  req.reply.view('provision').send();
+var getProv = function() {
+  this.reply.view('provision').send();
 };
 
 // Serve static js or css
 var getStatic = function(path) {
-  if (! path.match(/(css|js)/)) return req.reply({success: false});
+  if (! path.match(/(css|js)/)) return this.reply({success: false});
   return {directory: {
     path: __dirname + '/public/' + path,
     listing: false,
@@ -99,19 +125,27 @@ var getStatic = function(path) {
   }}
 };
 
-server.route({path: '/', method: 'GET', handler: rootHandler});
-server.route({path: '/.well-known/browserid', method: 'GET', handler: getWellknown});
-server.route({path: '/sign_in', method: 'GET', handler: getAuth});
-server.route({path: '/cert_key', method: 'POSt', handler: postCertKey});
-server.route({path: '/provision', method: 'GET', handler: getProv});
-server.route({path: '/identity', method: 'GET', handler: getIdentityIsAuthenticated});
-server.route({path: '/otp', method: 'POST', handler: postOtpForVerification});
-server.route({path: '/js/{path*}', method: 'GET', handler: getStatic('js')});
-server.route({path: '/css/{path*}', method: 'GET', handler: getStatic('css')});
+var routes = [
+  ['GET',  '/',                       getRoot],
+  ['GET',  '/.well-known/browserid',  getWellknown],
+  ['GET',  '/sign_in',                getAuth],
+  ['GET',  '/provision',              getProv],
+  ['GET',  '/identity',               getIdentityIsAuthenticated],
+  ['GET',  '/js/{path*}',             getStatic('js')],
+  ['GET',  '/css/{path*}',            getStatic('css')],
+
+  ['POST', '/otp',                    postOtpForVerification],
+  ['POST', '/cert_key',               postCertKey]
+];
+
+routes.forEach(function(tuple) {
+  server.route({method: tuple[0], path: tuple[1], handler: tuple[2]});
+});
 
 module.exports = server;
 
 if (!module.parent) {
+  console.log('starting server');
   server.start();
 }
 

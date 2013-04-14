@@ -9,56 +9,56 @@
    * 'vvvvvvcurikvhj'.
    */
   navigator.id.beginProvisioning(function(email, certDuration) {
-    var identity = email.split("@")[0];
+    var identity = email.split('@')[0];
 
     /*
      * Inside the beginProvisioning callback, determine if the user actually
      * owns the given email address by checking for an active session with your
      * domain.
      */
-    isAuthenticated(identity, function(authenticated) {
-      if (authenticated) {
-        navigator.id.genKeyPair(function(pubKey) {
-          certifyKey(identity, pubKey, certDuration, function(status) {
-            if (!status.success) {
+    isAuthenticated(identity, function(result) {
+      if (result.success) {
+        navigator.id.genKeyPair(function(publicKey) {
+          certifyKey(email, publicKey, certDuration, function(result) {
+            if (!result.success) {
               // If the user does not have an active session associated with
               // the given email address, call
               // navigator.id.raiseProvisioningFailure() with an optional, but
               // recommended, error message at its first parameter. This causes
               // the browser to stop the provisioning process and instead show
               // the user your authentication page.
-              return navigator.id.raiseProvisioningFailure(status.reason);
+              return navigator.id.raiseProvisioningFailure(result.reason);
             }
-            navigator.id.registerCertificate(status.certificate);
+            navigator.id.registerCertificate(result.certificate);
           });
         });
       }
       else {
-        navigator.id.raiseProvisioningFailure("user is not authenticated as target user");
+        navigator.id.raiseProvisioningFailure('user is not authenticated as target user');
       }
     });
   });
 
   function isAuthenticated(identity, callback) {
     $.ajax({
-      type: "GET",
-      url: "/identity",
+      type: 'GET',
+      url: '/identity',
+      dataType: 'json',
       data: {
         identity: identity
       },
-      success: function(resp, code) {
-        callback && callback(resp.success);
-      }
+      success: callback
     });
   }
 
-  function certifyKey(identity, pubkey, duration, callback) {
+  function certifyKey(email, publicKey, duration, callback) {
     $.ajax({
-      type: "POST",
-      url: "/cert_key",
+      type: 'POST',
+      url: '/cert_key',
+      dataType: 'json',
       data: {
-        identity: identity,
-        pubkey: pubkey,
+        email: email,
+        publicKey: publicKey,
         duration: duration
       },
       success: callback

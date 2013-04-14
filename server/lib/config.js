@@ -8,7 +8,6 @@ require('jwcrypto/lib/algs/rs');
 require('jwcrypto/lib/algs/ds');
 
 function readSekret(name) {
-  console.log("reading", name);
   var filepath = path.join(__dirname, '../../sekret', name);
   return JSON.parse(fs.readFileSync(filepath).toString());
 }
@@ -17,20 +16,28 @@ var config;
 if (fs.existsSync(GNOMN_CONFIG_FILE)) {
   config = JSON.parse(fs.readFileSync(GNOMN_CONFIG_FILE));
 } else {
+  var crypto = require('crypto');
+
   yubikey_creds = readSekret('yubikey');
   config = {
-    yubikey_client_id: yubikey_creds.id,
-    yubikey_secret_key: yubikey_creds.key,
+    yubikeyClientId: yubikey_creds.id,
+    yubikeySecretKey: yubikey_creds.key,
 
-    public_key: readSekret('key.publickey'),
-    secret_key: readSekret('key.secretkey')
+    publicKey: readSekret('key.publickey'),
+    secretKey: readSekret('key.secretkey'),
+
+    sessionKey: crypto.createHash('sha1').update(crypto.randomBytes(2048)).digest('hex'),
+
+    hostname: 'localhost'
   }
 }
 
 // At this point, public and secret keys have been read from JSON.
 // Now convert them into jwcrypto objects for use by our certifier.
-config.public_key = jwcrypto.loadPublicKeyFromObject(config.public_key);
-config.secret_key = jwcrypto.loadSecretKeyFromObject(config.secret_key);
+// Keep a copy of the json public key for publishing in well-known.
+config.publicKey_json = config.publicKey;
+config.publicKey = jwcrypto.loadPublicKeyFromObject(config.publicKey);
+config.secretKey = jwcrypto.loadSecretKeyFromObject(config.secretKey);
 
 // awsbox sets PORT and IP_ADDRESS in the env.
 config.port = parseInt(process.env.PORT || 3000, 10);
