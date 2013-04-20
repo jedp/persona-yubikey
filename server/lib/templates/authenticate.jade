@@ -1,13 +1,21 @@
 extends layout
 
 block content
-  form(method='post', action='/otp', name='form_authenticate')#form_authenticate.hidden
-    label(for='OTP') OTP
-    input(type='text', name='otp', placeholder='vvvvvvcucrlcietctckflvnncdgckubflugerlnr')#otp
-    button Submit
+  #container
+    #header
+      h3 Sign in with your YubiKey
 
-  p#success.hidden Great success! You are now signed in.
+    #content
+      p Please provide a one-time password using your YubiKey:
+
+      form(method='post', action='/otp', name='form_authenticate')#form_authenticate
+        label(for='OTP') OTP
+        input(type='text', name='otp', size='44', placeholder='vvvvvvcucrlcietctckflvnncdgckubflugerlnr')#otp
+        button Submit
+
+      p#success.hidden Great success!
 
   script(src='https://login.persona.org/authentication_api.js')
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
   script(src='js/authenticate.js')
+

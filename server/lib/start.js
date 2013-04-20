@@ -42,7 +42,7 @@ server.plugin.allow({ext: true}).require(yar, sessionOptions, function (err) {
 
 // Serve the home page
 var getRoot = function() {
-  this.reply.view('index', {message: 'I like pie'}).send();
+  this.reply.view('index').send();
 };
 
 // Serve browserid support manifest

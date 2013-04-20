@@ -5,7 +5,11 @@
     var identity = email.split('@')[0];
   });
 
+  $('#success').hide();
+
   $('#form_authenticate').on('submit', function(evt) {
+    $('#success').text("Authenticating with Yubico ...").show();
+
     evt.preventDefault();
     var otp = $('#otp').val().trim();
     $.ajax({
@@ -18,7 +22,7 @@
         if (data.success) {
           navigator.id.completeAuthentication();
         } else {
-          console.error(data);
+          $('#success').text('YubiKey authentiction failed: ' + data.reason);
         }
       }
     });

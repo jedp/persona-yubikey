@@ -20,12 +20,15 @@ if (fs.existsSync(GNOMN_CONFIG_FILE)) {
 
   yubikey_creds = readSekret('yubikey');
   config = {
+    // Acquire api key from https://upgrade.yubico.com/getapikey/
     yubikeyClientId: yubikey_creds.id,
     yubikeySecretKey: yubikey_creds.key,
 
+    // These must be generated in advance
     publicKey: readSekret('key.publickey'),
     secretKey: readSekret('key.secretkey'),
 
+    // Create a random session key
     sessionKey: crypto.createHash('sha1').update(crypto.randomBytes(2048)).digest('hex'),
 
     hostname: 'localhost'

@@ -1,0 +1,199 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v1.0 | 20080212 */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+    text-decoration: none;
+}
+del {
+    text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* 
+ End of reset
+ */
+
+.hidden {
+}
+
+body {
+  font-family: sans-serif;
+  background-color: #ccc;
+  color: #000;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  padding: 0px;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1, h2, h3 {
+  font-family: 'Open Sans Condensed', sans-serif;
+  margin: 0 2em;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+.option {
+  font-style: italic;
+  color: #aaa;
+}
+
+p, div, form {
+  margin: .5em 0em;
+}
+
+pre, code {
+  background-color: #eee;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -border-radius: 6px;
+  border: 1px solid #999;
+  font-family: "ocr-b-std-1","ocr-b-std-2",monospace;
+  font-weight: 400;
+  font-size: 12px;
+  padding: 4px;
+  margin: 2px;
+}
+
+pre {
+  margin: 4px 0px;
+  padding: .6em;
+  line-height: 1.3em;
+}
+
+dl {
+  line-height: 2em;
+}
+dt {
+  position: relative;
+  float: left;
+  font-variant: small-caps;
+}
+dd {
+  margin-left: 9em;
+}
+
+#fork {
+  z-index: 2;
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+#container { 
+  position: relative; 
+  width: 960px; 
+  margin: 0 auto; 
+  padding: 0 2em; 
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 1em 1em 0 0;
+  border: 0;
+  background-color: #ddd;
+  width: 100%;
+  height: 2em;
+  z-index: 1;
+}
+
+#content {
+  z-index: 0;
+  width: 100%;
+  padding-top: 4em;
+}
+
+#stream {
+}
+
+.stream_item {
+  positon: relative;
+  font-size: 1em;
+  background-color: #bbb;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -border-radius: 6px;
+  border: 1px solid #999;
+  margin: 4px 0px;
+  padding: 2px 6px;
+  position: relative;
+}
+
+.stream_item .duration {
+  float: right;
+  margin-right: 0;
+}
+
+.stream_item .timestamp {
+  font-weight: 400;
+  font-family: "ocr-b-std-1","ocr-b-std-2",monospace;
+  font-size: 12px;
+  color: #666;
+}
+
+.stream_item .viewLink {
+  float: right;
+  margin-right: 0;
+  font-style: italic;
+}
+
+
