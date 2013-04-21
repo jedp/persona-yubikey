@@ -117,7 +117,7 @@ var getProv = function() {
 
 // Serve static js or css
 var getStatic = function(path) {
-  if (! path.match(/(css|js)/)) return this.reply({success: false});
+  if (! path.match(/(css|js|img)/)) return this.reply({success: false});
   return {directory: {
     path: __dirname + '/public/' + path,
     listing: false,
@@ -133,6 +133,7 @@ var routes = [
   ['GET',  '/identity',               getIdentityIsAuthenticated],
   ['GET',  '/js/{path*}',             getStatic('js')],
   ['GET',  '/css/{path*}',            getStatic('css')],
+  ['GET',  '/img/{path*}',            getStatic('img')],
 
   ['POST', '/otp',                    postOtpForVerification],
   ['POST', '/cert_key',               postCertKey]
