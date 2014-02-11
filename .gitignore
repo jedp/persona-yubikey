@@ -1,6 +1,7 @@
 *.{pem,crt,key}
 /node_modules
 /sekret
+npm-debug.log
 
 *~
 *.sw[op]
